@@ -1,0 +1,1236 @@
+<html>
+    <head>
+        <!-- Titolo della pagina visualizzato nella tab del browser -->
+        <title>SPA immagini</title>
+        <!-- ========== CSS STILI APPLICAZIONE ========== -->
+        <style>
+            /* ===== CSS VARIABILI TEMA -===== */
+            /* Definisce i colori per il tema chiaro -->
+        
+            .contenitore-immagine {
+                text-align: center;
+                height: 70vh;
+                margin: 20px;
+            }
+            #immagine {
+                height: 100%;
+            }
+
+            .azioni {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 16px;
+                max-width: 400px;
+                margin: 0 auto 12px;
+                flex-wrap: wrap;
+            }
+            .azioni .bottone {
+                background-color:darkseagreen;
+                font-weight: 700;
+                font-size: 18px;
+                margin: 0;
+                padding: 0;
+                border-radius: 8px;
+                cursor: pointer;
+                user-select: none;
+                border: 2px solid transparent;
+                width: 210px;
+                height: 56px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .azioni .bottone:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(47,138,87,0.18); }
+
+            .cornice {
+                margin: 25px;
+                padding: 25px;
+                padding-top: 0px;
+                border: 4px solid var(--cornice-border, #373737);
+                border-radius: 10px;
+                background: var(--cornice-bg, #DEDEDE);
+            }
+            #immagini-salvate {
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+            #immagini-salvate img {
+                height: 250px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- ========== SEZIONE PRINCIPALE: IMMAGINE CASUALE ========== -->
+        <!-- Contenitore che visualizza l'immagine casuale di gatto da salvare -->
+        <div class="contenitore-immagine">
+            <img id="immagine" src="https://cataas.com/cat/sdSmAsEB45187tIM?position=center" alt="">
+        </div>
+
+        <!-- ========== SEZIONE AZIONI: BOTTONI PRINCIPALI ========== -->
+        <!-- Bottoni per generare nuova immagine e per salvare l'immagine attuale -->
+        <div class="azioni">
+            <div id="nuova-img" class="bottone">Nuova immagine</div>
+            <div id="salva-img" class="bottone">Salva</div>
+        </div>
+
+        <!-- ========== SEZIONE PRINCIPALE: LISTA IMMAGINI E FILTRI ========== -->
+        <div class="cornice">
+            <!-- Header con titolo, toggle tema, ricerca, filtri, ordinamento -->
+            <div style="display:flex;justify-content:space-between;align-items:center;position:relative;">
+                <!-- Sezione sinistra: titolo con contatore e toggle tema -->
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <h1>Immagini salvate <span id="image-count" style="font-size:0.8rem;color:var(--muted);margin-left:8px">(0)</span></h1>
+                    <div id="theme-toggle" class="theme-toggle" title="Cambia tema">🌙</div>
+                </div>
+                <!-- Sezione destra: ricerca, filtri, ordinamento e azioni -->
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input id="search" placeholder="Cerca per descrizione" />
+                    <select id="sort" title="Ordina per voto">
+                        <option value="">Ordina per voto</option>
+                        <option value="asc">Voto crescente</option>
+                        <option value="desc">Voto decrescente</option>
+                        <option value="custom">Ordina personalizzato</option>
+                    </select>
+                    <select id="filter-vote" title="Mostra con voto >=">
+                        <option value="0">Tutti i voti</option>
+                        <option value="1">Voto >= 1</option>
+                        <option value="2">Voto >= 2</option>
+                        <option value="3">Voto >= 3</option>
+                        <option value="4">Voto >= 4</option>
+                        <option value="5">Voto >= 5</option>
+                    </select>
+                    <div id="star-filter" class="star-filter" title="Filtra per voto minimo"></div>
+                    <button id="show-favs" class="fav-toggle" title="Mostra preferiti">🤍</button>
+                    <button id="bulk-delete" class="btn btn-delete" title="Elimina selezionati" disabled>Elimina selezionati</button>
+                </div>
+            </div>
+            <!-- ========== STATISTICHE IMMAGINI ========== -->
+            <!-- Mostra conteggio immagini per voto e media globale -->
+            <div id="statistics" style="background:linear-gradient(180deg,rgba(75,159,106,0.08),rgba(75,159,106,0.04));padding:16px 20px;border-radius:8px;margin-bottom:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;">
+                <div style="text-align:center;padding:8px;">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Voto 5</div>
+                    <div style="font-size:24px;font-weight:700;color:#f59e0b;" id="stat-5">0</div>
+                </div>
+                <div style="text-align:center;padding:8px;">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Voto 4</div>
+                    <div style="font-size:24px;font-weight:700;color:#3b82f6;" id="stat-4">0</div>
+                </div>
+                <div style="text-align:center;padding:8px;">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Voto 3</div>
+                    <div style="font-size:24px;font-weight:700;color:#8b5cf6;" id="stat-3">0</div>
+                </div>
+                <div style="text-align:center;padding:8px;">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Voto 2</div>
+                    <div style="font-size:24px;font-weight:700;color:#ec4899;" id="stat-2">0</div>
+                </div>
+                <div style="text-align:center;padding:8px;">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Voto 1</div>
+                    <div style="font-size:24px;font-weight:700;color:#ef4444;" id="stat-1">0</div>
+                </div>
+                <div style="text-align:center;padding:8px;border-left:2px solid var(--muted);">
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Media</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--primary-0);" id="stat-avg">0.0</div>
+                </div>
+            </div>
+            <!-- Grid principale dove vengono renderizzate tutte le card immagini -->
+            <div id="immagini-salvate">
+            </div>
+            <!-- ========== CONTROLLI ORDINAMENTO PERSONALIZZATO ========== -->
+            <!-- Bottoni salva/annulla per il riordino via drag-and-drop -->
+            <div id="custom-sort-controls" style="display:none;margin-top:20px;padding-top:20px;border-top:2px solid var(--muted);text-align:center;gap:12px;justify-content:center;">
+                <p style="color:var(--muted);font-size:14px;margin:0 0 12px 0;">💬 Trascina le immagini per riordinarle</p>
+                <div style="display:flex;gap:10px;justify-content:center;">
+                    <button id="cancel-custom-sort" class="btn btn-secondary" style="padding:10px 20px;font-weight:600;">Annulla</button>
+                    <button id="save-custom-sort" class="btn btn-primary" style="padding:10px 20px;font-weight:600;background:linear-gradient(180deg,#4b9f6a 0%,#367a50 100%);color:#fff;box-shadow:0 8px 18px rgba(75,159,106,0.2);">✓ Salva ordine</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== MODALE: SALVATAGGIO E MODIFICA IMMAGINI ========== -->
+        <!-- Form modale per inserire descrizione e voto di una nuova immagine o per modificarsela -->
+        <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:1500;">
+            <div style="background:var(--card-bg);color:var(--text-1);padding:20px;border-radius:8px;max-width:500px;width:90%;display:flex;flex-direction:column;">
+                <h3 id="modal-title" style="margin:0 0 12px 0;">Salva immagine</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <!-- URL rimosso: l'immagine viene presa dall'anteprima (preview) -->
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;">Descrizione
+                        <textarea id="inp-desc" maxlength="200" rows="3" style="padding:8px;border-radius:6px;border:1px solid #d3dce9;background:var(--card-input-bg);color:var(--text-1);font-family:inherit;"></textarea>
+                    </label>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:14px;">Voto (1-5)
+                        <div id="modal-stars" class="stars" aria-hidden="false"></div>
+                        <input id="inp-rating" type="hidden" />
+                    </label>
+                    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+                        <button id="cancel-btn" class="btn btn-secondary">Annulla</button>
+                        <button id="confirm-btn" class="btn btn-primary" style="padding:10px 20px;font-weight:600;cursor:pointer;">Conferma</button>
+                    </div>
+                    <div id="form-error" style="color:red;display:none;font-size:13px;margin-top:6px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LIGHTBOX: VISUALIZZAZIONE IMMAGINE INGRANDITA ========== -->
+        <!-- Finestra modale per visualizzare immagine a schermo intero quando cliccata -->
+        <div id="lightbox" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);z-index:2000;">
+            <div style="max-width:90%;max-height:90%;display:flex;flex-direction:column;align-items:center;gap:12px;">
+                <img id="lightbox-img" src="" alt="" style="max-width:100%;max-height:80vh;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.6);" />
+                <div id="lightbox-desc" style="color:#fff;opacity:0.95;max-width:80%;text-align:center;"></div>
+                <button id="lightbox-close" class="btn btn-secondary">Chiudi</button>
+            </div>
+        </div>
+
+        <!-- ========== SNACKBAR: NOTIFICHE E UNDO ========== -->
+        <!-- Barra di notifica fissa in basso per mostrare messaggi di azione e undo -->
+        <div id="snackbar" style="position:fixed;left:50%;transform:translateX(-50%);bottom:18px;display:none;z-index:2100;background:rgba(20,20,20,0.9);color:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);align-items:center;gap:10px;">
+            <span id="snackbar-msg"></span>
+            <button id="snackbar-undo" class="btn btn-primary">Annulla</button>
+        </div>
+
+        <script>
+            const API = 'http://localhost:1337';
+
+            const btnNuova = document.getElementById("nuova-img");
+            const btnSalva = document.getElementById("salva-img");
+            const img = document.getElementById("immagine");
+            const immaginiContainer = document.getElementById("immagini-salvate");
+
+            const modal = document.getElementById('modal');
+            const inpDesc = document.getElementById('inp-desc');
+            const inpRating = document.getElementById('inp-rating');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const confirmBtn = document.getElementById('confirm-btn');
+            const modalTitle = document.getElementById('modal-title');
+            const formError = document.getElementById('form-error');
+
+            // ========== RATING MODALE ==========
+            // Variabile globale per sincronizzare il rating selezionato nel modal
+            let currentModalRating = 3;
+
+            // Riferimenti agli elementi di ricerca, ordinamento e filtri
+            const searchInput = document.getElementById('search');
+            const sortSelect = document.getElementById('sort');
+            const filterVote = document.getElementById('filter-vote');
+            const showFavsBtn = document.getElementById('show-favs');
+            const bulkDeleteBtn = document.getElementById('bulk-delete');
+            
+            // Custom sort controls
+            const customSortControls = document.getElementById('custom-sort-controls');
+            const saveCustomSortBtn = document.getElementById('save-custom-sort');
+            const cancelCustomSortBtn = document.getElementById('cancel-custom-sort');
+            
+            // Stato per ordinamento personalizzato
+            let isCustomSortMode = false;
+            let draggedCardElement = null;
+            let draggedCardId = null;
+            let originalOrder = [];
+            let dragOffset = { x: 0, y: 0 };
+            let cardPositionsMap = new Map();
+            // export/import preferiti rimossi
+
+            // selezione per operazioni di massa
+            const selectedIds = new Set();
+            
+            // ========== FUNZIONE: AGGIORNA STATO BOTTONE BULK DELETE ==========
+            // Disabilita bottone se nessun elemento è selezionato, abilita con conteggio se c'è selezione
+            function updateBulkState() {
+                if (!bulkDeleteBtn) return;
+                bulkDeleteBtn.disabled = selectedIds.size === 0;
+                bulkDeleteBtn.textContent = selectedIds.size ? `Elimina selezionati (${selectedIds.size})` : 'Elimina selezionati';
+            }
+            
+            // ========== FUNZIONE: ELIMINAZIONE MASSICCIA ==========
+            // Cancella tutti gli elementi selezionati via API DELETE
+            async function bulkDelete() {
+                if (selectedIds.size === 0) return;
+                if (!confirm(`Eliminare ${selectedIds.size} elementi?`)) return;
+                const ids = [...selectedIds];
+                for (const id of ids) {
+                    try { await fetch(API + '/images/' + id, { method: 'DELETE' }); } catch(e){ console.error(e); }
+                }
+                selectedIds.clear(); updateBulkState(); loadImages();
+            }
+            
+            // ========== SCORCIATOIE DA TASTIERA ==========
+            // t = toggle tema, f = focus ricerca (ignora se si digita in input/textarea)
+            // scorciatoie: t toggle tema, f focus ricerca
+            document.addEventListener('keydown', (e)=>{
+                if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+                if (e.key === 't') document.getElementById('theme-toggle')?.click();
+                if (e.key === 'f') { searchInput.focus(); e.preventDefault(); }
+            });
+
+            // ========== GESTIONE PREFERITI (LocalStorage) ==========
+            // Funzioni per leggere, salvare e gestire preferiti in localStorage
+            function getFavorites() {
+                try { return new Set(JSON.parse(localStorage.getItem('favorites') || '[]').map(String)); } catch (e) { return new Set(); }
+            }
+            function saveFavorites(set) {
+                try { localStorage.setItem('favorites', JSON.stringify([...set])); } catch (e) {}
+            }
+            function isFavorite(id) { return getFavorites().has(String(id)); }
+            function toggleFavorite(id) {
+                const s = getFavorites();
+                const key = String(id);
+                if (s.has(key)) s.delete(key); else s.add(key);
+                saveFavorites(s);
+                loadImages();
+            }
+
+            // ========== GENERAZIONE STELLE INTERATTIVE ==========
+            // Crea stelle cliccabili (in modale) o solo visuali (su card)
+            // container: elemento DOM, rating: 1-5, editable: bool, onChange: callback
+            // helper: crea stelle (usata in modal e per visualizzazione)
+            function createStars(container, rating, editable, onChange) {
+                container.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    const s = document.createElement('span');
+                    s.className = 'star' + (i <= rating ? ' filled' : '');
+                    s.textContent = '★';
+                    if (editable) {
+                        s.style.cursor = 'pointer';
+                        s.addEventListener('click', () => {
+                            // Aggiorna la variabile globale e l'input hidden
+                            currentModalRating = i;
+                            inpRating.value = i;
+                            console.log('Rating selezionato:', i);
+                            if (onChange) onChange(i);
+                            // Ridisegna le stelle con il nuovo valore
+                            createStars(container, i, editable, onChange);
+                        });
+                    }
+                    container.appendChild(s);
+                }
+            }
+
+            async function changeRating(imgObj, newRating) {
+                // ========== CAMBIO VOTO IMMAGINE ==========
+                // Aggiorna il voto di un'immagine via API PUT e ricarica la lista
+                newRating = Math.max(1, Math.min(5, Number(newRating)));
+                const payload = { image_url: imgObj.image_url, description: imgObj.description, rating: newRating };
+                try {
+                    const res = await fetch(API + '/images/' + imgObj.id, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.status === 204) loadImages();
+                    else alert('Errore aggiornamento voto');
+                } catch (e) { console.error(e); alert('Errore aggiornamento voto'); }
+            }
+
+            // ========== MENU CONTESTUALE MODIFICA ==========
+            // Menu dropdown per le opzioni "Modifica dettagli" e "Sostituisci immagine"
+            let __currentEditMenu = null;
+            function hideEditMenu() {
+                if (__currentEditMenu) { __currentEditMenu.remove(); __currentEditMenu = null; document.removeEventListener('click', __onDocClick); }
+            }
+            function __onDocClick(e) {
+                if (!__currentEditMenu) return;
+                if (!__currentEditMenu.contains(e.target)) hideEditMenu();
+            }
+            function showEditMenu(imgObj, anchorEl) {
+                hideEditMenu();
+                const menu = document.createElement('div');
+                menu.className = 'edit-menu';
+
+                const opt1 = document.createElement('button'); opt1.textContent = 'Modifica dettagli';
+                opt1.addEventListener('click', () => { hideEditMenu(); openModal('edit', imgObj); });
+
+                const opt2 = document.createElement('button'); opt2.textContent = 'Sostituisci immagine';
+                opt2.addEventListener('click', () => { hideEditMenu(); openModal('edit', Object.assign({}, imgObj, { description: imgObj.description })); setTimeout(()=>{ inpDesc.focus(); },50); });
+
+                menu.appendChild(opt1); menu.appendChild(opt2);
+                document.body.appendChild(menu);
+
+                const rect = anchorEl.getBoundingClientRect();
+                menu.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+                menu.style.left = (rect.left + window.scrollX) + 'px';
+
+                __currentEditMenu = menu;
+                setTimeout(()=>{ document.addEventListener('click', __onDocClick); }, 0);
+            }
+
+            // ========== LIGHTBOX: IMMAGINE INGRANDITA ==========
+            // Visualizza immagine a schermo intero quando cliccata
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxDesc = document.getElementById('lightbox-desc');
+            const lightboxClose = document.getElementById('lightbox-close');
+            function openLightbox(url, desc) {
+                if (!lightbox) return;
+                lightboxImg.src = url;
+                lightboxImg.alt = desc || '';
+                lightboxDesc.textContent = desc || '';
+                lightbox.style.display = 'flex';
+            }
+            function closeLightbox(){ if (!lightbox) return; lightbox.style.display = 'none'; lightboxImg.src = ''; }
+            if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+            if (lightbox) lightbox.addEventListener('click', (e)=>{ if (e.target === lightbox) closeLightbox(); });
+
+            // ========== SNACKBAR: NOTIFICHE E UNDO ==========
+            // Barra di notifica in basso per messaggi di azione con opzione undo
+            const snackbar = document.getElementById('snackbar');
+            const snackbarMsg = document.getElementById('snackbar-msg');
+            const snackbarUndo = document.getElementById('snackbar-undo');
+            let __snackTimeout = null;
+            function showUndoSnack(message, undoCallback, timeout = 6000) {
+                if (!snackbar) return;
+                snackbarMsg.textContent = message;
+                snackbar.style.display = 'flex';
+                if (snackbarUndo) {
+                    const onUndo = async ()=>{
+                        try { await undoCallback(); } catch(e){ console.error(e); }
+                        hideSnack();
+                    };
+                    snackbarUndo.onclick = onUndo;
+                }
+                if (__snackTimeout) clearTimeout(__snackTimeout);
+                __snackTimeout = setTimeout(()=>{ hideSnack(); }, timeout);
+            }
+            function hideSnack(){ if (!snackbar) return; snackbar.style.display = 'none'; if (snackbarUndo) snackbarUndo.onclick = null; if (__snackTimeout) clearTimeout(__snackTimeout); }
+
+            // ========== UTILITÀ URL ==========
+            // Completa gli URL delle immagini aggiungendo il dominio se necessario
+            function ensureFullUrl(u) {
+                if (!u) return '';
+                if (u.startsWith('http')) return u;
+                if (u.startsWith('/')) return 'https://cataas.com' + u;
+                return u;
+            }
+
+            // ========== GENERAZIONE IMMAGINE CASUALE ==========
+            // Chiama l'API pubblica cataas.com per ottenere un'immagine di gatto casuale
+            async function nuovaImmagineRandom() {
+                try {
+                    const res = await fetch('https://cataas.com/cat?json=true');
+                    const body = await res.json();
+                    img.src = ensureFullUrl(body.url);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            // ========== GESTIONE MODALE ==========
+            // Apre il modale per salvare immagine nuova (mode='new') o modificarla (mode='edit')
+            function openModal(mode, data = null) {
+                formError.style.display = 'none';
+                    if (mode === 'new') {
+                        modalTitle.textContent = 'Salva immagine';
+                        inpDesc.value = '';
+                        currentModalRating = 3;
+                        inpRating.value = 3;
+                        confirmBtn.dataset.mode = 'new';
+                        delete confirmBtn.dataset.id;
+                        delete confirmBtn.dataset.imageUrl;
+                        const ms = document.getElementById('modal-stars'); if (ms) createStars(ms, currentModalRating, true, null);
+                    } else if (mode === 'edit') {
+                        modalTitle.textContent = 'Modifica immagine';
+                        confirmBtn.dataset.imageUrl = data.image_url || '';
+                        inpDesc.value = data.description || '';
+                        currentModalRating = data.rating || 3;
+                        inpRating.value = currentModalRating;
+                        confirmBtn.dataset.mode = 'edit';
+                        confirmBtn.dataset.id = data.id;
+                        const ms2 = document.getElementById('modal-stars'); if (ms2) createStars(ms2, currentModalRating, true, null);
+                    }
+                    // marca il modal in modalità 'edit' così da poter applicare stili specifici
+                    if (mode === 'edit') modal.classList.add('edit-mode'); else modal.classList.remove('edit-mode');
+                    modal.style.display = 'flex';
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+                // rimuovi eventuale stato di modifica
+                modal.classList.remove('edit-mode');
+            }
+
+            // ========== VALIDAZIONE FORM ==========
+            // Valida descrizione e rating, restituisce errore se non valido
+            function validate(desc, rating) {
+                if (!rating || isNaN(rating)) return 'Voto mancante';
+                rating = Number(rating);
+                if (rating < 1 || rating > 5) return 'Voto deve essere tra 1 e 5';
+                if (desc && desc.length > 200) return 'Descrizione troppo lunga (max 200)';
+                return null;
+            }
+
+            // ========== SALVATAGGIO IMMAGINE NUOVA ==========
+            // Valida form e salva nuova immagine via API POST
+            async function saveNewImage() {
+                const url = img.src || '';
+                const desc = inpDesc.value.trim();
+                const rating = currentModalRating;
+                const err = validate(desc, rating);
+                if (err) { formError.textContent = err; formError.style.display = 'block'; return; }
+
+                const payload = { image_url: url, description: desc, rating };
+                const res = await fetch(API + '/images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.status === 201) {
+                    closeModal();
+                    loadImages();
+                } else {
+                    formError.textContent = 'Errore nel salvataggio'; formError.style.display = 'block';
+                }
+            }
+
+            // ========== AGGIORNAMENTO IMMAGINE ESISTENTE ==========
+            // Valida form e aggiorna immagine via API PUT
+            async function updateImage(id) {
+                const url = confirmBtn.dataset.imageUrl || img.src || '';
+                const desc = inpDesc.value.trim();
+                const rating = currentModalRating;
+                const err = validate(desc, rating);
+                if (err) { formError.textContent = err; formError.style.display = 'block'; return; }
+
+                const payload = { image_url: url, description: desc, rating };
+                const res = await fetch(API + '/images/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.status === 204) {
+                    closeModal();
+                    loadImages();
+                } else {
+                    formError.textContent = 'Errore durante la modifica'; formError.style.display = 'block';
+                }
+            }
+
+            // ========== ELIMINAZIONE IMMAGINE CON UNDO ==========
+            // Cancella un'immagine e mostra snackbar con opzione ripristino (undo)
+            async function deleteImage(id) {
+                if (!confirm('Confermi eliminazione?')) return;
+                try {
+                    // prima recupero l'oggetto per poterlo ripristinare in caso di undo
+                    const getRes = await fetch(API + '/images/' + id);
+                    const obj = getRes.ok ? await getRes.json() : null;
+                    const res = await fetch(API + '/images/' + id, { method: 'DELETE' });
+                    if (res.status === 204) {
+                        loadImages();
+                        if (obj) showUndoSnack('Immagine eliminata', async () => {
+                            // ripristina via POST
+                            try {
+                                const p = { image_url: obj.image_url, description: obj.description, rating: obj.rating };
+                                const r2 = await fetch(API + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) });
+                                if (r2.status === 201) loadImages();
+                            } catch(e){ console.error('undo failed', e); }
+                        });
+                    } else alert('Errore durante eliminazione');
+                } catch(e) { console.error(e); alert('Errore durante eliminazione'); }
+            }
+
+            function renderImageCard(imgObj) {
+                // ========== RENDERING CARD SINGOLA IMMAGINE ==========
+                // Crea l'elemento DOM della card contenente immagine, voto, descrizione e azioni
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.id = String(imgObj.id);
+
+                // checkbox per selezione multipla
+                const selWrap = document.createElement('div');
+                selWrap.style.display = 'flex'; selWrap.style.justifyContent = 'flex-end';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox'; checkbox.className = 'card-select';
+                checkbox.addEventListener('click', (e)=>{ e.stopPropagation(); const id = String(imgObj.id); if (checkbox.checked) selectedIds.add(id); else selectedIds.delete(id); updateBulkState(); });
+                selWrap.appendChild(checkbox);
+                card.appendChild(selWrap);
+
+                const thumb = document.createElement('img');
+                thumb.className = 'card-thumb';
+                thumb.src = ensureFullUrl(imgObj.image_url);
+                thumb.alt = imgObj.description || '';
+                thumb.loading = 'lazy';
+                thumb.style.cursor = 'zoom-in';
+                thumb.addEventListener('click', ()=> openLightbox(ensureFullUrl(imgObj.image_url), imgObj.description || ''));
+
+                const desc = document.createElement('p');
+                desc.className = 'card-desc';
+                desc.textContent = imgObj.description || '(nessuna descrizione)';
+                if (imgObj.description && imgObj.description.length > 60) desc.title = imgObj.description;
+
+                const rating = document.createElement('p');
+                rating.className = 'card-rating';
+                rating.textContent = 'Voto: ' + (imgObj.rating ?? '');
+
+                // stelle visuali
+                const starWrap = document.createElement('div');
+                starWrap.className = 'star-wrap';
+                createStars(starWrap, imgObj.rating || 0, false, null);
+
+                const actions = document.createElement('div');
+                actions.className = 'card-actions';
+
+                // pulsante preferiti
+                const favBtn = document.createElement('button');
+                favBtn.className = 'btn-fav';
+                try {
+                    if (isFavorite(imgObj.id)) { favBtn.classList.add('favorited'); favBtn.textContent = '❤️'; }
+                    else { favBtn.textContent = '🤍'; }
+                } catch (e) { favBtn.textContent = '🤍'; }
+                favBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(imgObj.id); });
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-edit';
+                editBtn.textContent = 'Modifica';
+                editBtn.addEventListener('click', (e) => showEditMenu(imgObj, e.currentTarget));
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn btn-delete';
+                delBtn.textContent = 'Elimina';
+                delBtn.addEventListener('click', () => deleteImage(imgObj.id));
+
+                const ratingControls = document.createElement('div');
+                ratingControls.className = 'rating-arrows';
+                const up = document.createElement('button');
+                up.className = 'btn btn-small';
+                up.textContent = '▲';
+                up.title = 'Aumenta voto';
+                up.addEventListener('click', () => changeRating(imgObj, (imgObj.rating || 0) + 1));
+                const down = document.createElement('button');
+                down.className = 'btn btn-small';
+                down.textContent = '▼';
+                down.title = 'Diminuisci voto';
+                down.addEventListener('click', () => changeRating(imgObj, (imgObj.rating || 0) - 1));
+
+                ratingControls.appendChild(up);
+                ratingControls.appendChild(down);
+
+                actions.appendChild(favBtn);
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                actions.appendChild(ratingControls);
+
+                card.appendChild(thumb);
+                card.appendChild(desc);
+                card.appendChild(starWrap);
+                card.appendChild(rating);
+                card.appendChild(actions);
+
+                return card;
+            }
+
+            // ========== AGGIORNAMENTO STATISTICHE ==========
+            // Calcola e visualizza: conteggio per voto (5,4,3,2,1) e media globale
+            function updateStatistics(images) {
+                const stats = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+                let totalRating = 0;
+                
+                images.forEach(img => {
+                    const r = img.rating || 0;
+                    if (r >= 1 && r <= 5) {
+                        stats[r]++;
+                        totalRating += r;
+                    }
+                });
+                
+                const count = images.length;
+                const avg = count > 0 ? (totalRating / count).toFixed(1) : 0;
+                
+                document.getElementById('stat-5').textContent = stats[5];
+                document.getElementById('stat-4').textContent = stats[4];
+                document.getElementById('stat-3').textContent = stats[3];
+                document.getElementById('stat-2').textContent = stats[2];
+                document.getElementById('stat-1').textContent = stats[1];
+                document.getElementById('stat-avg').textContent = avg;
+            }
+
+            async function loadImages() {
+                // ========== CARICAMENTO E FILTRAGGIO IMMAGINI ==========
+                // Funzione principale che:
+                // 1. Carica tutte le immagini dal backend
+                // 2. Applica filtri (ricerca, voto minimo, preferiti)
+                // 3. Applica ordinamento (voto asc/desc o personalizzato)
+                // 4. Renderizza le card nella griglia
+                // 5. Aggiorna contatore
+                try {
+                    const res = await fetch(API + '/images');
+                    const list = await res.json();
+                    let filtered = list;
+                    const q = (searchInput.value || '').toLowerCase();
+                    if (q) filtered = filtered.filter(i => (i.description || '').toLowerCase().includes(q));
+
+                    // filtro per voto minimo (se selezionato)
+                    const fv = filterVote ? Number(filterVote.value) : 0;
+                    if (fv && !isNaN(fv)) filtered = filtered.filter(i => (i.rating || 0) >= fv);
+
+                    // filtro preferiti se attivo
+                    if (showFavsBtn && showFavsBtn.classList.contains('active')) {
+                        const favs = getFavorites();
+                        filtered = filtered.filter(i => favs.has(String(i.id)));
+                    }
+
+                    const sort = sortSelect.value;
+                    if (sort === 'asc') filtered.sort((a,b) => a.rating - b.rating);
+                    else if (sort === 'desc') filtered.sort((a,b) => b.rating - a.rating);
+                    else if (sort === 'custom') filtered.sort((a,b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+                    immaginiContainer.innerHTML = '';
+                    filtered.forEach(i => immaginiContainer.appendChild(renderImageCard(i)));
+                    
+                    // Aggiorna statistiche globali (su tutte le immagini, non solo filtrate)
+                    updateStatistics(list);
+                    
+                    // Se in modalità personalizzata, abilita drag and drop e animazione
+                    if (isCustomSortMode) {
+                        enableCustomSortMode();
+                    }
+                    
+                    // Aggiorna contatore immagini visualizzate
+                    const cnt = document.getElementById('image-count'); if (cnt) cnt.textContent = `(${filtered.length})`;
+                } catch (e) { console.error(e); }
+            }
+
+            // ORDINAMENTO PERSONALIZZATO CON DRAG AND DROP (mouse-based)
+            function enableCustomSortMode() {
+                // ========== ABILITA MODALITÀ DRAG AND DROP ==========
+                // Rende le card trascinabili aggiungendo listener mouse e classi CSS
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.classList.add('draggable-card', 'shake-animation');
+                    card.style.cursor = 'grab';
+                    
+                    // Rimuovi vecchi listener
+                    card.removeEventListener('mousedown', handleMouseDown);
+                    // Aggiungi nuovo listener
+                    card.addEventListener('mousedown', handleMouseDown);
+                });
+            }
+
+            // SALVA POSIZIONI DELLE CARD PER ANIMAZIONE FLIP
+            function saveCardPositions() {
+                // ========== SALVATAGGIO POSIZIONI CARD (FLIP Animation Prep) ==========
+                // Salva le posizioni attuali di tutte card prima del drag
+                // Usa requestAnimationFrame per ottimizzare le letture DOM
+                requestAnimationFrame(() => {
+                    const cards = document.querySelectorAll('.card');
+                    cardPositionsMap.clear();
+                    cards.forEach(card => {
+                        const rect = card.getBoundingClientRect();
+                        cardPositionsMap.set(card, {
+                            top: rect.top,
+                            left: rect.left,
+                            width: rect.width,
+                            height: rect.height
+                        });
+                    });
+                });
+            }
+
+            // ANIMA CARD CON FLIP ANIMATION DOPO REORDER
+            function animateCardPositionsWithFlip() {
+                // ========== ANIMAZIONE FLIP (FLIP Animation Playback) ==========
+                // Anima le card tornando alle posizioni precedenti poi al posto finale
+                // Tecnica FLIP: First (old pos), Last (new pos), Invert (transform), Play (animate)
+                requestAnimationFrame(() => {
+                    const cards = document.querySelectorAll('.card');
+                    cards.forEach(card => {
+                        // Non animare la card trascinata
+                        if (card === draggedCardElement) return;
+                        
+                        const oldPos = cardPositionsMap.get(card);
+                        if (!oldPos) return;
+                        
+                        const newRect = card.getBoundingClientRect();
+                        
+                        // Calcola delta (INVERT step di FLIP)
+                        const deltaX = oldPos.left - newRect.left;
+                        const deltaY = oldPos.top - newRect.top;
+                        
+                        // Applica transform invertito (carta torna indietro visivamente)
+                        card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        
+                        // Force browser reflow
+                        void card.offsetHeight;
+                        
+                        // Prepara transition
+                        card.style.transition = 'transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        // Rimuovi transform per animare al posto finale (PLAY step)
+                        card.style.transform = 'translate(0, 0)';
+                        
+                        // Cleanup after animation
+                        const onTransitionEnd = () => {
+                            card.style.transition = '';
+                            card.removeEventListener('transitionend', onTransitionEnd);
+                        };
+                        card.addEventListener('transitionend', onTransitionEnd);
+                    });
+                    
+                    // Risalva posizioni per il prossimo reorder
+                    saveCardPositions();
+                });
+            }
+
+            function handleMouseDown(e) {
+                if (e.button !== 0) return; // Solo click sinistro
+                
+                // Salva posizioni PRIMA di iniziare il drag
+                saveCardPositions();
+                
+                draggedCardElement = this;
+                draggedCardId = this.dataset.id;
+                
+                const rect = this.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                
+                this.style.opacity = '0.7';
+                this.style.zIndex = '1000';
+                this.style.position = 'relative';
+                this.classList.add('dragging');
+                
+                function mouseMoveHandler(moveEvent) {
+                    if (!draggedCardElement) return;
+                    
+                    const x = moveEvent.clientX;
+                    const y = moveEvent.clientY;
+                    
+                    // Trova la card sotto il cursore
+                    const elementBelow = document.elementFromPoint(x, y);
+                    const targetCard = elementBelow?.closest('.card');
+                    
+                    if (targetCard && targetCard !== draggedCardElement && targetCard.classList.contains('draggable-card')) {
+                        const targetRect = targetCard.getBoundingClientRect();
+                        const dragRect = draggedCardElement.getBoundingClientRect();
+                        
+                        // Determina se inserire prima o dopo
+                        if (dragRect.top < targetRect.top) {
+                            immaginiContainer.insertBefore(draggedCardElement, targetCard);
+                        } else {
+                            immaginiContainer.insertBefore(draggedCardElement, targetCard.nextSibling);
+                        }
+                        
+                        // Anima il reorder con FLIP
+                        animateCardPositionsWithFlip();
+                    }
+                }
+                
+                function mouseUpHandler() {
+                    if (draggedCardElement) {
+                        draggedCardElement.style.opacity = '1';
+                        draggedCardElement.style.zIndex = '';
+                        draggedCardElement.style.position = '';
+                        draggedCardElement.classList.remove('dragging');
+                    }
+                    draggedCardElement = null;
+                    draggedCardId = null;
+                    cardPositionsMap.clear();
+                    
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                }
+                
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+                e.preventDefault();
+            }
+
+            function disableCustomSortMode() {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.style.cursor = '';
+                    card.style.opacity = '1';
+                    card.style.zIndex = '';
+                    card.style.position = '';
+                    card.classList.remove('draggable-card', 'shake-animation', 'dragging');
+                    card.removeEventListener('mousedown', handleMouseDown);
+                });
+            }
+
+            async function saveCustomOrder() {
+                const cards = document.querySelectorAll('.card');
+                const ordini = Array.from(cards).map((card, index) => ({
+                    id: parseInt(card.dataset.id),
+                    sort_order: index
+                }));
+
+                try {
+                    const res = await fetch(API + '/images/update-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(ordini)
+                    });
+                    if (res.ok) {
+                        isCustomSortMode = false;
+                        draggedCardElement = null;
+                        draggedCardId = null;
+                        sortSelect.value = '';
+                        disableCustomSortMode();
+                        customSortControls.style.display = 'none';
+                        loadImages();
+                        alert('Ordine salvato con successo!');
+                    } else {
+                        alert('Errore nel salvataggio dell\'ordine');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Errore durante il salvataggio');
+                }
+            }
+
+            function cancelCustomSort() {
+                isCustomSortMode = false;
+                draggedCardElement = null;
+                draggedCardId = null;
+                sortSelect.value = '';
+                disableCustomSortMode();
+                customSortControls.style.display = 'none';
+                loadImages();
+            }
+
+            // event listeners
+            btnNuova.addEventListener('click', nuovaImmagineRandom);
+            btnSalva.addEventListener('click', () => openModal('new'));
+            cancelBtn.addEventListener('click', closeModal);
+            confirmBtn.addEventListener('click', () => {
+                const mode = confirmBtn.dataset.mode;
+                if (mode === 'new') saveNewImage();
+                else if (mode === 'edit') updateImage(confirmBtn.dataset.id);
+            });
+
+            searchInput.addEventListener('input', () => loadImages());
+            sortSelect.addEventListener('change', () => {
+                if (sortSelect.value === 'custom') {
+                    isCustomSortMode = true;
+                    customSortControls.style.display = 'flex';
+                    loadImages();
+                } else {
+                    isCustomSortMode = false;
+                    disableCustomSortMode();
+                    customSortControls.style.display = 'none';
+                    loadImages();
+                }
+            });
+            if (filterVote) filterVote.addEventListener('change', () => loadImages());
+            // crea filtro stelle cliccabili
+            (function initStarFilter(){
+                const container = document.getElementById('star-filter');
+                if (!container) return;
+                function render(min){ container.innerHTML=''; for(let i=1;i<=5;i++){ const s = document.createElement('span'); s.className = 'star' + (i<=min? ' filled':''); s.textContent='★'; s.addEventListener('click', ()=>{ filterVote.value = String(i); loadImages(); render(i); }); container.appendChild(s);} }
+                render(0);
+            })();
+            if (showFavsBtn) showFavsBtn.addEventListener('click', () => {
+                const active = showFavsBtn.classList.toggle('active');
+                showFavsBtn.textContent = active ? '❤️' : '🤍';
+                loadImages();
+            });
+            if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', () => bulkDelete());
+            
+            // Event listeners per custom sort
+            if (saveCustomSortBtn) saveCustomSortBtn.addEventListener('click', () => saveCustomOrder());
+            if (cancelCustomSortBtn) cancelCustomSortBtn.addEventListener('click', () => cancelCustomSort());
+            
+            // event listeners for export/import removed
+
+            // inizializzazione
+            nuovaImmagineRandom();
+            loadImages();
+
+            // Theme toggle: persist and apply
+            (function(){
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                function applyTheme(t) {
+                    document.documentElement.setAttribute('data-theme', t);
+                    toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+                }
+                const saved = localStorage.getItem('site-theme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const initial = saved || (prefersDark ? 'dark' : 'light');
+                applyTheme(initial);
+                toggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    applyTheme(next);
+                    localStorage.setItem('site-theme', next);
+                });
+            })();
+        </script>
+        <style>
+            /* Layout e tipografia */
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+                background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+                color: var(--text-1);
+                margin: 0;
+                padding: 20px 12px;
+                transition: background 220ms ease, color 220ms ease;
+            }
+
+            h1 { margin: 0; font-size: 1.6rem; color: var(--text-1); }
+
+            .cornice {
+                box-shadow: 0 6px 18px rgba(35,48,68,0.08);
+                background: var(--cornice-bg, linear-gradient(180deg,#ffffff,#fbfdff));
+                border-radius: 12px;
+                border: none;
+            }
+
+            :root {
+                --bg-0: #f4f7fb;
+                --bg-1: #e9eef6;
+                --text-1: #233044;
+                --muted: #6b7280;
+                --card-bg: #ffffff;
+                --cornice-bg: linear-gradient(180deg,#ffffff,#fbfdff);
+                --cornice-border: transparent;
+                --primary-0: #4b9f6a;
+                --primary-1: #367a50;
+                --danger-0: #ef4444;
+                --danger-1: #c53030;
+            }
+
+            /* Dark theme overrides when data-theme="dark" on <html> */
+            [data-theme="dark"] {
+                --bg-0: #071027;
+                --bg-1: #08131f;
+                --text-1: #e6eef8;
+                --muted: #98a0ad;
+                --card-bg: #0b1624;
+                --cornice-bg: linear-gradient(180deg,#09101a,#071027);
+                --cornice-border: rgba(255,255,255,0.04);
+                --primary-0: #2563eb;
+                --primary-1: #1e40af;
+                --danger-0: #ef4444;
+                --danger-1: #b91c1c;
+            }
+
+            /* theme toggle - fissato alto sinistra */
+            .theme-toggle { position:fixed; top:12px; left:12px; z-index:1200; display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.02)); cursor:pointer; box-shadow: 0 6px 18px rgba(16,24,40,0.08); }
+            .theme-toggle:hover { transform: translateY(-2px); }
+
+            /* selezione card (checkbox) */
+            .card-select { width:16px; height:16px; margin:6px; }
+
+            /* Buttons */
+            .btn { font-weight:600; border-radius:8px; padding:8px 10px; border:none; cursor:pointer; font-size:14px; }
+            .btn:focus { outline: 2px solid rgba(0,0,0,0.06); }
+            .btn-primary { background: linear-gradient(180deg,var(--primary-0),var(--primary-1)); color:#fff; box-shadow: 0 8px 20px rgba(75,159,106,0.12); }
+            .btn-secondary { background: transparent; border:1px solid #d1d5db; color:var(--text-1); }
+            .btn-edit { background: linear-gradient(180deg,#3b82f6,#2563eb); color:#fff; }
+            .btn-delete { background: linear-gradient(180deg,var(--danger-0),var(--danger-1)); color:#fff; }
+
+            /* Card */
+            .card { width: 300px; border-radius: 10px; background: var(--card-bg); padding: 10px; margin: 8px; box-shadow: 0 8px 26px rgba(35,48,68,0.06); display:flex; flex-direction:column; gap:8px; transition: transform 200ms ease, box-shadow 200ms ease; }
+            .card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 46px rgba(35,48,68,0.14); }
+            .card-thumb { width:100%; height:180px; object-fit:cover; border-radius:8px; }
+            .card-thumb[loading="lazy"] { background: linear-gradient(90deg,#f0f0f0,#e9eef6); }
+            .card-desc { margin:0; color:var(--text-1); opacity:0.92; min-height:40px; max-height:72px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; text-overflow:ellipsis; word-break:break-word; }
+            .card-rating { margin:0; color:var(--text-1); font-weight:600; }
+            .card-actions { display:flex; justify-content:space-between; gap:8px; }
+
+            /* stelle e controlli voto */
+            .stars { display:inline-flex; gap:4px; align-items:center; }
+            .star {
+                font-size:18px;
+                color:#e5e7eb;
+                text-shadow: 0 1px 0 rgba(0,0,0,0.02);
+                cursor: pointer;
+                transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+                display: inline-block;
+                transform-origin: center;
+            }
+            .star:hover {
+                filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+                transform: scale(1.3) rotate(15deg);
+            }
+            .star.filled {
+                color:#f59e0b;
+                filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+                animation: starPulse 0.4s ease-out;
+            }
+            @keyframes starPulse {
+                0% { transform: scale(0.8); }
+                50% { transform: scale(1.15); }
+                100% { transform: scale(1); }
+            }
+            .star-wrap { margin: 6px 0; }
+            .rating-arrows { display:flex; gap:6px; align-items:center; }
+            .btn-small { padding:4px 6px; font-size:12px; border-radius:6px; }
+
+            .contenitore-immagine {
+                display:flex;align-items:center;justify-content:center;
+                height: 60vh; margin-bottom: 12px;
+            }
+
+            /* filtro stelle cliccabili */
+            .star-filter { display:inline-flex; gap:6px; align-items:center; margin-left:6px; }
+            .star-filter .star { font-size:20px; cursor:pointer; opacity:0.6; }
+            .star-filter .star.filled { opacity:1; }
+
+            /* tooltip descrizione (su hover mostra testo completo) */
+            .card-desc[title] { cursor:help; }
+
+            #immagine {
+                max-height: 100%; max-width: 100%; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            }
+
+            .azioni {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 16px;
+                max-width: 400px;
+                margin: 0 auto 12px;
+                flex-wrap: wrap;
+            }
+            .azioni .bottone {
+                background: linear-gradient(180deg,#60a86f,#2f8a57);
+                color: #fff; padding: 0; font-size: 14px; border-radius: 12px;
+                box-shadow: 0 10px 26px rgba(47,138,87,0.16); transition: transform 120ms ease, box-shadow 120ms ease;
+                border: 1px solid rgba(255,255,255,0.06);
+                text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+                flex-shrink: 0;
+                white-space: nowrap;
+                width: 160px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+            .azioni .bottone:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(47,138,87,0.18); }
+            /* colori distinti per i due principali pulsanti */
+            #nuova-img.bottone { background: linear-gradient(180deg,#2563eb,#1e40af); box-shadow: 0 10px 26px rgba(37,99,235,0.14); }
+            #nuova-img.bottone:hover { box-shadow: 0 14px 34px rgba(37,99,235,0.18); transform: translateY(-2px); }
+            #salva-img.bottone { background: linear-gradient(180deg,#7c3aed,#5b21b6); box-shadow: 0 10px 26px rgba(124,58,237,0.12); }
+            #salva-img.bottone:hover { box-shadow: 0 14px 34px rgba(124,58,237,0.16); transform: translateY(-2px); }
+
+            /* Responsive: schermi piccoli < 600px */
+            @media (max-width: 600px) {
+                .azioni {
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 100%;
+                }
+                .azioni .bottone {
+                    width: 100%;
+                    max-width: 250px;
+                }
+            }
+
+            /* ricerca e select */
+            #search { padding:8px 10px; border-radius:8px; border:1px solid #ccd6e6; }
+            #sort { padding:8px 10px; border-radius:8px; border:1px solid #ccd6e6; }
+
+            /* lista immagini */
+            #immagini-salvate { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; align-items:flex-start; }
+            #immagini-salvate > div { width: 300px; display:flex; flex-direction:column; }
+            #immagini-salvate img { border-radius:8px; }
+            #immagini-salvate p { margin: 8px 0 6px 0; color: var(--text-1); }
+
+            /* card hover */
+            #immagini-salvate > div { transition: transform 160ms ease, box-shadow 160ms ease; }
+            #immagini-salvate > div:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(35,48,68,0.12); }
+
+            /* pulsanti nelle card: lascia intatti i bottoni con classe .btn */
+            #immagini-salvate button:not(.btn) { background:#fff; border:1px solid #ccd6e6; padding:6px 10px; border-radius:6px; cursor:pointer; }
+            #immagini-salvate button:not(.btn):hover { background:#f3f7fb; }
+
+            /* assicurati che i bottoni .btn-edit e .btn-delete siano leggibili */
+            .btn-edit { background: linear-gradient(180deg,#2563eb,#1e40af); color:#fff; box-shadow: 0 8px 18px rgba(37,99,235,0.12); border: none; }
+            .btn-delete { background: linear-gradient(180deg,#ef4444,#b91c1c); color:#fff; box-shadow: 0 8px 18px rgba(239,68,68,0.12); border: none; }
+            .btn-delete:active { transform: translateY(1px); }
+
+            .btn-small { background: linear-gradient(180deg,#f3f4f6,#e5e7eb); border:1px solid #d1d5db; }
+            :root {
+                --card-input-bg: #ffffff;
+            }
+
+            [data-theme="dark"] {
+                --card-input-bg: #0f1c2b;
+            }
+
+            #modal textarea {
+    background: var(--card-input-bg);
+    color: var(--text-1);
+}
+
+
+            /* preferiti */
+            .fav-toggle { background:transparent; border:1px solid rgba(0,0,0,0.06); padding:6px 8px; border-radius:8px; cursor:pointer; font-size:16px; }
+            .fav-toggle.active { background: linear-gradient(180deg,#fff1f2,#ffe4e6); border-color: rgba(239,68,68,0.16); }
+            .btn-fav { background: transparent; border:1px solid rgba(0,0,0,0.06); padding:6px 8px; border-radius:8px; cursor:pointer; font-size:14px; }
+            .btn-fav.favorited { background: linear-gradient(180deg,#fff7ed,#ffedd5); border-color: rgba(245,158,11,0.16); }
+
+            /* menu contestuale Modifica */
+            .edit-menu { position: absolute; background: #fff; border-radius:8px; box-shadow: 0 8px 32px rgba(16,24,40,0.12); padding:6px; z-index:1000; }
+            .edit-menu button { display:block; width:100%; background:transparent; border:none; padding:8px 12px; text-align:left; cursor:pointer; border-radius:6px; }
+            .edit-menu button:hover { background:#f3f6fb; }
+
+            /* modal migliorata */
+            #modal { align-items:center; justify-content:center; }
+            #modal > div { box-shadow: 0 18px 60px rgba(35,48,68,0.25); }
+            #modal input[type="text"], #modal textarea, #modal input[type="number"] {
+                width: 100%; padding:8px 10px; border-radius:6px; border:1px solid #d3dce9; box-sizing:border-box;
+                background:var(--card-input-bg, #fbfdff); color:var(--text-1); font-size:14px;
+            }
+            #modal textarea { max-height:120px; overflow:auto; resize:vertical; }
+            #modal label { font-size:14px; color:var(--muted); }
+            #modal h3 { margin:0 0 6px 0; color:var(--text-1); }
+
+            /* stile per input readonly in edit mode */
+            #modal input[readonly] { background: transparent; border: none; padding-left:0; color: var(--muted); }
+            #modal .button-row { display:flex; justify-content:flex-end; gap:8px; }
+            #modal #confirm-btn { background: linear-gradient(180deg,#4b9f6a,#367a50); color:#fff; border:none; padding:8px 12px; border-radius:8px; }
+            #modal #cancel-btn { background:transparent; border:1px solid #cbd5e1; padding:8px 12px; border-radius:8px; }
+            #form-error { margin-top:6px; }
+
+            /* Forza descrizione nero su bianco quando si è in modalità modifica */
+            #modal.edit-mode textarea#inp-desc {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #cfcfcf !important;
+            }
+
+            /* Animazione scuotimento (shake) per modalità drag-drop */
+            /* Animazione pulse leggera per indicare trascinabilità */
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.6; }
+            }
+
+            .shake-animation {
+                animation: pulse 1.5s ease-in-out infinite !important;
+                border: 2px dashed var(--muted) !important;
+            }
+
+            /* Stili per modalità drag-drop */
+            .draggable-card {
+                cursor: grab !important;
+                opacity: 1 !important;
+                transition: all 150ms ease !important;
+            }
+
+            .draggable-card:active {
+                cursor: grabbing !important;
+            }
+
+            .draggable-card.dragging {
+                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25) !important;
+                opacity: 0.95 !important;
+            }
+
+            /* Stili per custom sort controls */
+            #custom-sort-controls {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* responsive */
+            @media (max-width: 640px) {
+                #immagini-salvate { flex-direction: column; align-items: center; }
+                .contenitore-immagine { height: 40vh; }
+            }
+        </style>
+    </body>
+
+</html>
